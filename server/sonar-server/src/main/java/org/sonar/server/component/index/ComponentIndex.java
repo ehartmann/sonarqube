@@ -21,11 +21,12 @@ package org.sonar.server.component.index;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.apache.commons.lang.StringUtils;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -34,12 +35,11 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.filters.FiltersAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.filters.InternalFilters;
-import org.elasticsearch.search.aggregations.bucket.filters.InternalFilters.Bucket;
+import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
 import org.elasticsearch.search.aggregations.metrics.tophits.InternalTopHits;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder;
-import org.sonar.core.util.stream.Collectors;
+import org.elasticsearch.search.highlight.HighlightBuilder.Field;
 import org.sonar.server.es.BaseIndex;
 import org.sonar.server.es.EsClient;
 import org.sonar.server.user.UserSession;
@@ -49,6 +49,8 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.sonar.server.component.index.ComponentIndexDefinition.FIELD_AUTHORIZATION_GROUPS;
 import static org.sonar.server.component.index.ComponentIndexDefinition.FIELD_AUTHORIZATION_USERS;
+import static org.sonar.server.component.index.ComponentIndexDefinition.FIELD_KEY;
+import static org.sonar.server.component.index.ComponentIndexDefinition.FIELD_NAME;
 import static org.sonar.server.component.index.ComponentIndexDefinition.FIELD_QUALIFIER;
 import static org.sonar.server.component.index.ComponentIndexDefinition.INDEX_COMPONENTS;
 import static org.sonar.server.component.index.ComponentIndexDefinition.TYPE_AUTHORIZATION;
@@ -65,12 +67,12 @@ public class ComponentIndex extends BaseIndex {
     this.userSession = userSession;
   }
 
-  public List<ComponentsPerQualifier> search(ComponentIndexQuery query) {
+  public List<ComponentHitsPerQualifier> search(ComponentIndexQuery query) {
     return search(query, ComponentIndexSearchFeature.values());
   }
 
   @VisibleForTesting
-  List<ComponentsPerQualifier> search(ComponentIndexQuery query, ComponentIndexSearchFeature... features) {
+  List<ComponentHitsPerQualifier> search(ComponentIndexQuery query, ComponentIndexSearchFeature... features) {
     Collection<String> qualifiers = query.getQualifiers();
     if (qualifiers.isEmpty()) {
       return Collections.emptyList();
@@ -90,16 +92,6 @@ public class ComponentIndex extends BaseIndex {
     return aggregationsToQualifiers(response);
   }
 
-  private static FiltersAggregationBuilder createAggregation(ComponentIndexQuery query) {
-    FiltersAggregationBuilder filtersAggregation = AggregationBuilders.filters(FILTERS_AGGREGATION_NAME)
-      .subAggregation(createSubAggregation(query));
-
-    query.getQualifiers().stream()
-      .forEach(q -> filtersAggregation.filter(q, termQuery(FIELD_QUALIFIER, q)));
-
-    return filtersAggregation;
-  }
-
   private static TopHitsBuilder createSubAggregation(ComponentIndexQuery query) {
     TopHitsBuilder sub = AggregationBuilders.topHits(DOCS_AGGREGATION_NAME);
     query.getLimit().ifPresent(sub::setSize);
@@ -115,8 +107,6 @@ public class ComponentIndex extends BaseIndex {
     Arrays.stream(features)
       .map(f -> f.getQuery(query.getQuery()))
       .forEach(featureQuery::should);
-
-    return esQuery.must(featureQuery);
   }
 
   private QueryBuilder createAuthorizationFilter() {
@@ -135,7 +125,7 @@ public class ComponentIndex extends BaseIndex {
       QueryBuilders.boolQuery().must(matchAllQuery()).filter(groupsAndUser));
   }
 
-  private static List<ComponentsPerQualifier> aggregationsToQualifiers(SearchResponse response) {
+  private static List<ComponentHitsPerQualifier> aggregationsToQualifiers(SearchResponse response) {
     InternalFilters filtersAgg = response.getAggregations().get(FILTERS_AGGREGATION_NAME);
     List<Bucket> buckets = filtersAgg.getBuckets();
     return buckets.stream()
@@ -143,7 +133,7 @@ public class ComponentIndex extends BaseIndex {
       .collect(Collectors.toList(buckets.size()));
   }
 
-  private static ComponentsPerQualifier bucketToQualifier(Bucket bucket) {
+  private static ComponentHitsPerQualifier bucketToQualifier(Bucket bucket) {
     InternalTopHits docs = bucket.getAggregations().get(DOCS_AGGREGATION_NAME);
 
     SearchHits hitList = docs.getHits();

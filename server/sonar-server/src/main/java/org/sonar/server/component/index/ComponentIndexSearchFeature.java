@@ -24,12 +24,16 @@ import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.sonar.server.es.DefaultIndexSettings;
 
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchPhraseQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.elasticsearch.index.query.QueryBuilders.prefixQuery;
 import static org.sonar.server.component.index.ComponentIndexDefinition.FIELD_KEY;
 import static org.sonar.server.component.index.ComponentIndexDefinition.FIELD_NAME;
 import static org.sonar.server.es.DefaultIndexSettingsElement.FUZZY_ANALYZER;
+import static org.sonar.server.es.DefaultIndexSettingsElement.SEARCH_CAMEL_CASE_ANALYZER;
 import static org.sonar.server.es.DefaultIndexSettingsElement.SEARCH_GRAMS_ANALYZER;
+import static org.sonar.server.es.DefaultIndexSettingsElement.SINGLE_CHARACTER_PREFIX_ANALYZER;
 import static org.sonar.server.es.DefaultIndexSettingsElement.SORTABLE_ANALYZER;
 
 public enum ComponentIndexSearchFeature {

@@ -21,6 +21,7 @@ package org.sonar.server.component.index;
 
 import com.google.common.collect.ImmutableMap;
 import org.sonar.api.config.Settings;
+import org.sonar.server.es.DefaultIndexSettingsElement;
 import org.sonar.server.es.IndexDefinition;
 import org.sonar.server.es.NewIndex;
 
@@ -45,6 +46,11 @@ public class ComponentIndexDefinition implements IndexDefinition {
 
   private static final int DEFAULT_NUMBER_OF_SHARDS = 5;
 
+  public static final DefaultIndexSettingsElement[] NAME_ANALYZERS = {
+    SEARCH_GRAMS_ANALYZER,
+    SINGLE_CHARACTER_PREFIX_ANALYZER,
+    FUZZY_ANALYZER};
+
   private final Settings settings;
 
   public ComponentIndexDefinition(Settings settings) {
@@ -62,12 +68,8 @@ public class ComponentIndexDefinition implements IndexDefinition {
     mapping.setAttribute("_parent", ImmutableMap.of("type", TYPE_AUTHORIZATION));
     mapping.setAttribute("_routing", ImmutableMap.of("required", "true"));
     mapping.stringFieldBuilder(FIELD_PROJECT_UUID).build();
-    mapping.stringFieldBuilder(FIELD_KEY).enable(SORTABLE_ANALYZER).build();
-    mapping.stringFieldBuilder(FIELD_NAME).enable(SEARCH_GRAMS_ANALYZER, FUZZY_ANALYZER).build();
+    mapping.stringFieldBuilder(FIELD_NAME).enable(NAME_ANALYZERS).enableTermVectors().build();
     mapping.stringFieldBuilder(FIELD_QUALIFIER).build();
-
-    // do not store document but only indexation of information
-    mapping.setEnableSource(false);
 
     // type "authorization"
     NewIndex.NewIndexType authorizationMapping = index.createType(TYPE_AUTHORIZATION);

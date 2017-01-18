@@ -19,29 +19,19 @@
  */
 package org.sonar.server.component.index;
 
-import java.util.List;
+import java.util.Map;
+import org.elasticsearch.search.highlight.HighlightField;
 
-public class ComponentsPerQualifier {
+public class ComponentHit {
 
-  private final String qualifier;
-  private final List<String> componentUuids;
-  private final long totalHits;
+  private final String uuid;
 
-  public ComponentsPerQualifier(String qualifier, List<String> componentUuids, long totalHits) {
-    this.qualifier = qualifier;
-    this.componentUuids = componentUuids;
-    this.totalHits = totalHits;
+  public ComponentHit(String uuid, Map<String, HighlightField> highlightFields) {
+    this.uuid = uuid;
   }
 
-  public String getQualifier() {
-    return qualifier;
+  public String getUuid() {
+    return uuid;
   }
 
-  public List<String> getComponentUuids() {
-    return componentUuids;
-  }
-
-  public long getTotalHits() {
-    return totalHits;
-  }
 }

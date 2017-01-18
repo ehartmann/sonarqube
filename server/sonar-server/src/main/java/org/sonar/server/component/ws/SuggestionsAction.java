@@ -34,9 +34,9 @@ import org.sonar.db.DbClient;
 import org.sonar.db.DbSession;
 import org.sonar.db.component.ComponentDto;
 import org.sonar.db.organization.OrganizationDto;
+import org.sonar.server.component.index.ComponentHitsPerQualifier;
 import org.sonar.server.component.index.ComponentIndex;
 import org.sonar.server.component.index.ComponentIndexQuery;
-import org.sonar.server.component.index.ComponentsPerQualifier;
 import org.sonarqube.ws.WsComponents.Component;
 import org.sonarqube.ws.WsComponents.SuggestionsWsResponse;
 import org.sonarqube.ws.WsComponents.SuggestionsWsResponse.Qualifier;
@@ -103,7 +103,7 @@ public class SuggestionsAction implements ComponentsWsAction {
       .setQualifiers(Arrays.asList(QUALIFIERS))
       .setLimit(NUMBER_OF_RESULTS_PER_QUALIFIER);
 
-    List<ComponentsPerQualifier> componentsPerQualifiers = searchInIndex(componentIndexQuery);
+    List<ComponentHitsPerQualifier> componentsPerQualifiers = searchInIndex(componentIndexQuery);
 
     if (componentsPerQualifiers.isEmpty()) {
       return Collections.emptyList();
@@ -136,7 +136,7 @@ public class SuggestionsAction implements ComponentsWsAction {
       .collect(Collectors.uniqueIndex(OrganizationDto::getUuid, OrganizationDto::getKey));
   }
 
-  private List<ComponentsPerQualifier> searchInIndex(ComponentIndexQuery componentIndexQuery) {
+  private List<ComponentHitsPerQualifier> searchInIndex(ComponentIndexQuery componentIndexQuery) {
     return index.search(componentIndexQuery);
   }
 

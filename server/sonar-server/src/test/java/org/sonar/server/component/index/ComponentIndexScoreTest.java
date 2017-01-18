@@ -55,6 +55,20 @@ public class ComponentIndexScoreTest extends ComponentIndexTest {
   }
 
   @Test
+  public void should_order_camel_case_matches_example2() {
+    assertResultOrder("MC",
+      "MethodComplexityCheck.java",
+      "EnumConstantTreeImpl.java");
+  }
+
+  @Test
+  public void should_order_camel_case_match_before_partial_match() {
+    assertResultOrder("MC",
+      "MethodComplexityCheck.java",
+      "PomCheck.java");
+  }
+
+  @Test
   public void should_prefer_prefix_to_partial() {
     assertResultOrder("corem",
       "CoreMetrics.java",
