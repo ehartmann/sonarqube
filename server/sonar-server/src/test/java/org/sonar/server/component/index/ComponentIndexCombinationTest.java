@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.db.component.ComponentDto;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ComponentIndexCombinationTest extends ComponentIndexTest {
@@ -47,7 +48,7 @@ public class ComponentIndexCombinationTest extends ComponentIndexTest {
     ComponentDto project = indexProject("struts", "Apache Struts");
     indexFile(project, "src/main/java/StrutsManager.java", "StrutsManager.java");
 
-    assertSearchResults(new ComponentIndexQuery("struts").setQualifier(Qualifiers.PROJECT), project);
+    assertSearchResults(new ComponentIndexQuery("struts").setQualifiers(asList(Qualifiers.PROJECT)), project);
   }
 
   @Test
