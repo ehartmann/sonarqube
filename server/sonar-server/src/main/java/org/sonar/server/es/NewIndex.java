@@ -26,6 +26,7 @@ import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import javax.annotation.CheckForNull;
@@ -190,7 +191,8 @@ public class NewIndex {
     private final String fieldName;
     private boolean disableSearch = false;
     private boolean disableNorms = false;
-    private SortedMap<String, Object> subFields = Maps.newTreeMap();
+    private boolean termVectors = false;
+    private SortedMap<String, SortedMap<String, String>> subFields = Maps.newTreeMap();
 
     private StringFieldBuilder(NewIndexType indexType, String fieldName) {
       this.indexType = indexType;
@@ -236,6 +238,11 @@ public class NewIndex {
       return this;
     }
 
+    public StringFieldBuilder enableTermVectors() {
+      termVectors = true;
+      return this;
+    }
+
     /**
      * Norms consume useless memory if string field is used for filtering or aggregations.
      *
@@ -265,6 +272,18 @@ public class NewIndex {
           "index", disableSearch ? "no" : "not_analyzed",
           "norms", ImmutableMap.of("enabled", String.valueOf(!disableNorms))));
       } else {
+
+        // FIXME
+        https: // www.elastic.co/guide/en/elasticsearch/reference/2.3/search-request-highlighting.html#matched-fields
+        if (termVectors) {
+          for (Entry<String, SortedMap<String, String>> entry : subFields.entrySet()) {
+            TreeMap<String, String> copy = new TreeMap<>(entry.getValue());
+            copy.put("term_vector", "with_positions_offsets");
+            entry.setValue(copy);
+          }
+          hash.put("store", "yes");
+        }
+
         hash.put("type", "multi_field");
         Map<String, Object> multiFields = new TreeMap<>(subFields);
         multiFields.put(fieldName, ImmutableMap.of(

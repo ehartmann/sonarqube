@@ -52,7 +52,7 @@ import org.sonar.server.component.index.ComponentIndex;
 import org.sonar.server.component.index.ComponentIndexDefinition;
 import org.sonar.server.component.index.ComponentIndexQuery;
 import org.sonar.server.component.index.ComponentIndexer;
-import org.sonar.server.component.index.ComponentsPerQualifier;
+import org.sonar.server.component.index.ComponentHitsPerQualifier;
 import org.sonar.server.es.EsTester;
 import org.sonar.server.exceptions.ForbiddenException;
 import org.sonar.server.issue.IssueDocTesting;
@@ -224,7 +224,7 @@ public class BulkDeleteActionTest {
     ComponentIndexQuery componentQuery = new ComponentIndexQuery(query);
     componentQuery.setQualifiers(Arrays.asList(Qualifiers.PROJECT));
     assertThat(componentIndex.search(componentQuery))
-      .flatExtracting(ComponentsPerQualifier::getComponentUuids)
+      .flatExtracting(ComponentHitsPerQualifier::getComponentUuids)
       .containsOnly(expectedResultUuids);
   }
 

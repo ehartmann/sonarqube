@@ -20,17 +20,18 @@
 package org.sonar.server.component.index;
 
 import java.util.Collection;
+import org.sonar.core.util.stream.Collectors;
 
-public class ComponentsPerQualifier {
+public class ComponentHitsPerQualifier {
 
   private final String qualifier;
-  private final Collection<String> componentUuids;
+  private final Collection<ComponentHit> hits;
   private final long totalHits;
 
-  public ComponentsPerQualifier(String qualifier, Collection<String> componentUuids, long totalHits) {
+  public ComponentHitsPerQualifier(String qualifier, Collection<ComponentHit> hits, long totalHits) {
     super();
     this.qualifier = qualifier;
-    this.componentUuids = componentUuids;
+    this.hits = hits;
     this.totalHits = totalHits;
   }
 
@@ -39,7 +40,7 @@ public class ComponentsPerQualifier {
   }
 
   public Collection<String> getComponentUuids() {
-    return componentUuids;
+    return hits.stream().map(ComponentHit::getUuid).collect(Collectors.toList());
   }
 
   public long getTotalHits() {

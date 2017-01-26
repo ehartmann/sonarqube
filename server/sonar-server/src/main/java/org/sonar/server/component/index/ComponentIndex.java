@@ -39,6 +39,7 @@ import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuil
 import org.elasticsearch.search.aggregations.bucket.filter.InternalFilter;
 import org.elasticsearch.search.aggregations.metrics.tophits.InternalTopHits;
 import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder;
+import org.elasticsearch.search.highlight.HighlightBuilder.Field;
 import org.sonar.server.es.BaseIndex;
 import org.sonar.server.es.EsClient;
 import org.sonar.server.user.UserSession;
@@ -48,6 +49,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import static org.sonar.server.component.index.ComponentIndexDefinition.FIELD_AUTHORIZATION_GROUPS;
 import static org.sonar.server.component.index.ComponentIndexDefinition.FIELD_AUTHORIZATION_USERS;
+import static org.sonar.server.component.index.ComponentIndexDefinition.FIELD_NAME;
 import static org.sonar.server.component.index.ComponentIndexDefinition.FIELD_QUALIFIER;
 import static org.sonar.server.component.index.ComponentIndexDefinition.INDEX_COMPONENTS;
 import static org.sonar.server.component.index.ComponentIndexDefinition.TYPE_AUTHORIZATION;
@@ -62,12 +64,12 @@ public class ComponentIndex extends BaseIndex {
     this.userSession = userSession;
   }
 
-  public List<ComponentsPerQualifier> search(ComponentIndexQuery query) {
+  public List<ComponentHitsPerQualifier> search(ComponentIndexQuery query) {
     return search(query, ComponentIndexSearchFeature.values());
   }
 
   @VisibleForTesting
-  List<ComponentsPerQualifier> search(ComponentIndexQuery query, ComponentIndexSearchFeature... features) {
+  List<ComponentHitsPerQualifier> search(ComponentIndexQuery query, ComponentIndexSearchFeature... features) {
     if (query.getQualifiers().isEmpty()) {
       return Collections.emptyList();
     }
@@ -75,7 +77,6 @@ public class ComponentIndex extends BaseIndex {
     SearchRequestBuilder request = getClient()
       .prepareSearch(INDEX_COMPONENTS)
       .setTypes(TYPE_COMPONENT)
-      .setFetchSource(false)
 
       // the search hits are part of the aggregations
       .setSize(0)
@@ -87,6 +88,7 @@ public class ComponentIndex extends BaseIndex {
       .forEach(request::addAggregation);
 
     SearchResponse searchResponse = request.get();
+    System.out.println(searchResponse);
 
     return query.getQualifiers().stream()
       .flatMap(q -> {
@@ -101,12 +103,16 @@ public class ComponentIndex extends BaseIndex {
           return Stream.empty();
         }
 
-        List<String> componentUuids = Arrays.stream(hits.getHits()).map(SearchHit::getId)
+        List<ComponentHit> componentHits = Arrays.stream(hits.getHits()).map(ComponentIndex::createHit)
           .collect(Collectors.toList());
 
-        return Stream.of(new ComponentsPerQualifier(q, componentUuids, totalHits));
+        return Stream.of(new ComponentHitsPerQualifier(q, componentHits, totalHits));
       })
       .collect(Collectors.toList());
+  }
+
+  private static ComponentHit createHit(SearchHit source) {
+    return new ComponentHit(source.getId(), source.getHighlightFields());
   }
 
   /**
@@ -124,6 +130,12 @@ public class ComponentIndex extends BaseIndex {
 
   private static TopHitsBuilder createSubAggregation(ComponentIndexQuery query) {
     TopHitsBuilder sub = AggregationBuilders.topHits("docs");
+
+    Field f = new Field(ComponentIndexDefinition.FIELD_NAME);
+    f.highlighterType("fast-vector-highlighter");
+    f.matchedFields(Arrays.stream(ComponentIndexDefinition.NAME_ANALYZERS).map(e -> e.subField(FIELD_NAME)).toArray(String[]::new));
+    sub.addHighlightedField(f);
+
     query.getLimit().ifPresent(sub::setSize);
     return sub.setFetchSource(false);
   }
