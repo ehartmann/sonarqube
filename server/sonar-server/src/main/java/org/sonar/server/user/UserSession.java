@@ -96,6 +96,10 @@ public interface UserSession {
    */
   UserSession checkOrganizationPermission(String organizationUuid, String permission);
 
+  /**
+   * @deprecated in 6.3 because of organizations. No replacement yet.
+   */
+  @Deprecated
   List<String> globalPermissions();
 
   /**
