@@ -55,7 +55,6 @@ import org.sonarqube.ws.WsMeasures;
 import org.sonarqube.ws.WsMeasures.ComponentWsResponse;
 import org.sonarqube.ws.client.measure.ComponentWsRequest;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
@@ -265,10 +264,9 @@ public class ComponentAction implements MeasuresWsAction {
   }
 
   private void checkPermissions(ComponentDto baseComponent) {
-    String projectUuid = firstNonNull(baseComponent.projectUuid(), baseComponent.uuid());
     if (!userSession.hasPermission(GlobalPermissions.SYSTEM_ADMIN) &&
-      !userSession.hasComponentUuidPermission(UserRole.ADMIN, projectUuid) &&
-      !userSession.hasComponentUuidPermission(UserRole.USER, projectUuid)) {
+      !userSession.hasComponentPermission(UserRole.ADMIN, baseComponent) &&
+      !userSession.hasComponentPermission(UserRole.USER, baseComponent)) {
       throw insufficientPrivilegesException();
     }
   }

@@ -51,7 +51,6 @@ import org.sonarqube.ws.WsComponents;
 import org.sonarqube.ws.WsComponents.TreeWsResponse;
 import org.sonarqube.ws.client.component.TreeWsRequest;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.collect.FluentIterable.from;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.String.CASE_INSENSITIVE_ORDER;
@@ -65,8 +64,8 @@ import static org.sonar.server.component.ComponentFinder.ParamNames.BASE_COMPONE
 import static org.sonar.server.component.ws.ComponentDtoToWsComponent.componentDtoToWsComponent;
 import static org.sonar.server.user.AbstractUserSession.insufficientPrivilegesException;
 import static org.sonar.server.ws.KeyExamples.KEY_PROJECT_EXAMPLE_001;
-import static org.sonar.server.ws.WsParameterBuilder.createQualifiersParameter;
 import static org.sonar.server.ws.WsParameterBuilder.QualifierParameterContext.newQualifierParameterContext;
+import static org.sonar.server.ws.WsParameterBuilder.createQualifiersParameter;
 import static org.sonar.server.ws.WsUtils.checkRequest;
 import static org.sonar.server.ws.WsUtils.writeProtobuf;
 import static org.sonarqube.ws.client.component.ComponentsWsParameters.ACTION_TREE;
@@ -195,10 +194,9 @@ public class TreeAction implements ComponentsWsAction {
   }
 
   private void checkPermissions(ComponentDto baseComponent) {
-    String projectUuid = firstNonNull(baseComponent.projectUuid(), baseComponent.uuid());
     if (!userSession.hasPermission(GlobalPermissions.SYSTEM_ADMIN) &&
-      !userSession.hasComponentUuidPermission(UserRole.ADMIN, projectUuid) &&
-      !userSession.hasComponentUuidPermission(UserRole.USER, projectUuid)) {
+      !userSession.hasComponentPermission(UserRole.ADMIN, baseComponent) &&
+      !userSession.hasComponentPermission(UserRole.USER, baseComponent)) {
       throw insufficientPrivilegesException();
     }
   }

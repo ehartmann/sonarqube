@@ -35,7 +35,6 @@ import org.sonar.server.user.UserSession;
 import org.sonarqube.ws.WsComponents.ShowWsResponse;
 import org.sonarqube.ws.client.component.ShowWsRequest;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.lang.String.format;
 import static org.sonar.core.util.Uuids.UUID_EXAMPLE_01;
 import static org.sonar.server.component.ws.ComponentDtoToWsComponent.componentDtoToWsComponent;
@@ -61,14 +60,14 @@ public class ShowAction implements ComponentsWsAction {
   public void define(WebService.NewController context) {
     WebService.NewAction action = context.createAction(ACTION_SHOW)
       .setDescription(format("Returns a component (file, directory, project, view…) and its ancestors. " +
-          "The ancestors are ordered from the parent to the root project. " +
-          "The '%s' or '%s' must be provided.<br>" +
-          "Requires one of the following permissions:" +
-          "<ul>" +
-          "<li>'Administer System'</li>" +
-          "<li>'Administer' rights on the specified project</li>" +
-          "<li>'Browse' on the specified project</li>" +
-          "</ul>",
+        "The ancestors are ordered from the parent to the root project. " +
+        "The '%s' or '%s' must be provided.<br>" +
+        "Requires one of the following permissions:" +
+        "<ul>" +
+        "<li>'Administer System'</li>" +
+        "<li>'Administer' rights on the specified project</li>" +
+        "<li>'Browse' on the specified project</li>" +
+        "</ul>",
         PARAM_ID, PARAM_KEY))
       .setResponseExample(getClass().getResource("show-example.json"))
       .setSince("5.4")
@@ -119,10 +118,9 @@ public class ShowAction implements ComponentsWsAction {
 
   private ComponentDto getComponentByUuidOrKey(DbSession dbSession, ShowWsRequest request) {
     ComponentDto component = componentFinder.getByUuidOrKey(dbSession, request.getId(), request.getKey(), ParamNames.ID_AND_KEY);
-    String projectUuid = firstNonNull(component.projectUuid(), component.uuid());
     if (!userSession.hasPermission(GlobalPermissions.SYSTEM_ADMIN) &&
-      !userSession.hasComponentUuidPermission(UserRole.ADMIN, projectUuid) &&
-      !userSession.hasComponentUuidPermission(UserRole.USER, projectUuid)) {
+      !userSession.hasComponentPermission(UserRole.ADMIN, component) &&
+      !userSession.hasComponentPermission(UserRole.USER, component)) {
       throw insufficientPrivilegesException();
     }
     return component;
