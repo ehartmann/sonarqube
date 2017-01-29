@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Set;
 import org.sonar.api.security.DefaultGroups;
 import org.sonar.core.permission.GlobalPermissions;
+import org.sonar.db.component.ComponentDto;
 
 /**
  * Allow code to be executed with the highest privileges possible, as if executed by a {@link GlobalPermissions#SYSTEM_ADMIN} account.
@@ -115,6 +116,11 @@ public final class DoPrivileged {
       @Override
       public List<String> globalPermissions() {
         return Collections.emptyList();
+      }
+
+      @Override
+      public boolean hasComponentPermission(String permission, ComponentDto component) {
+        return true;
       }
 
       @Override

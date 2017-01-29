@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.sonar.db.component.ComponentDto;
 import org.sonar.db.user.UserDto;
 import org.sonar.server.user.ThreadLocalUserSession;
 import org.sonar.server.user.UserSession;
@@ -250,6 +251,11 @@ public class UserSessionRule implements TestRule, UserSession {
   }
 
   @Override
+  public boolean hasComponentPermission(String permission, ComponentDto component) {
+    return hasComponentUuidPermission(permission, component.projectUuid());
+  }
+
+  @Override
   public boolean hasComponentPermission(String permission, String componentKey) {
     return currentUserSession.hasComponentPermission(permission, componentKey);
   }
@@ -323,6 +329,12 @@ public class UserSessionRule implements TestRule, UserSession {
   @Override
   public boolean hasOrganizationPermission(String organizationUuid, String permission) {
     return currentUserSession.hasOrganizationPermission(organizationUuid, permission);
+  }
+
+  @Override
+  public UserSession checkComponentPermission(String projectPermission, ComponentDto component) {
+    currentUserSession.checkComponentPermission(projectPermission, component);
+    return this;
   }
 
   @Override

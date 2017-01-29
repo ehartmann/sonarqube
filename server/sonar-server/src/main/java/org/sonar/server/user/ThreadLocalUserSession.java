@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import javax.annotation.CheckForNull;
+import org.sonar.db.component.ComponentDto;
 import org.sonar.server.exceptions.UnauthorizedException;
 
 /**
@@ -119,6 +120,12 @@ public class ThreadLocalUserSession implements UserSession {
   }
 
   @Override
+  public UserSession checkComponentPermission(String projectPermission, ComponentDto component) {
+    get().checkComponentPermission(projectPermission, component);
+    return this;
+  }
+
+  @Override
   public UserSession checkComponentPermission(String projectPermission, String componentKey) {
     get().checkComponentPermission(projectPermission, componentKey);
     return this;
@@ -128,6 +135,11 @@ public class ThreadLocalUserSession implements UserSession {
   public UserSession checkComponentUuidPermission(String permission, String componentUuid) {
     get().checkComponentUuidPermission(permission, componentUuid);
     return this;
+  }
+
+  @Override
+  public boolean hasComponentPermission(String permission, ComponentDto component) {
+    return get().hasComponentPermission(permission, component);
   }
 
   @Override

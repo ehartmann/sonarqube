@@ -22,6 +22,7 @@ package org.sonar.ce.user;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import org.sonar.db.component.ComponentDto;
 import org.sonar.server.user.UserSession;
 
 /**
@@ -105,6 +106,11 @@ public class CeUserSession implements UserSession {
   }
 
   @Override
+  public UserSession checkComponentPermission(String projectPermission, ComponentDto component) {
+    return notImplemented();
+  }
+
+  @Override
   public UserSession checkComponentPermission(String projectPermission, String componentKey) {
     return notImplemented();
   }
@@ -112,6 +118,11 @@ public class CeUserSession implements UserSession {
   @Override
   public UserSession checkComponentUuidPermission(String permission, String componentUuid) {
     return notImplemented();
+  }
+
+  @Override
+  public boolean hasComponentPermission(String permission, ComponentDto component) {
+    return notImplementedBooleanMethod();
   }
 
   @Override
