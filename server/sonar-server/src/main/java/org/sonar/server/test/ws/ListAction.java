@@ -246,7 +246,7 @@ public class ListAction implements TestsWsAction {
 
   private void checkComponentUuidPermission(DbSession dbSession, String componentUuid) {
     ComponentDto component = dbClient.componentDao().selectOrFailByUuid(dbSession, componentUuid);
-    userSession.checkComponentUuidPermission(UserRole.CODEVIEWER, component.projectUuid());
+    userSession.checkComponentPermission(UserRole.CODEVIEWER, component);
   }
 
   private static class TestToFileUuidFunction implements Function<TestDoc, String> {
