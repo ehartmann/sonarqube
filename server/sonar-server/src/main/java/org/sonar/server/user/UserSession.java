@@ -96,12 +96,6 @@ public interface UserSession {
    */
   UserSession checkOrganizationPermission(String organizationUuid, String permission);
 
-  /**
-   * @deprecated Only used by Views and the Developer Cockpit plugins.
-   */
-  @Deprecated
-  boolean hasGlobalPermission(String globalPermission);
-
   List<String> globalPermissions();
 
   /**
