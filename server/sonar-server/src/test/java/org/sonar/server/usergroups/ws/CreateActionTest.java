@@ -101,7 +101,7 @@ public class CreateActionTest {
 
   @Test
   public void fail_if_not_administrator() throws Exception {
-    userSession.login("not-admin");
+    userSession.log_in("not-admin");
 
     expectedException.expect(ForbiddenException.class);
 
@@ -219,7 +219,7 @@ public class CreateActionTest {
   }
 
   private void loginAsAdmin(OrganizationDto org) {
-    userSession.login().addOrganizationPermission(org.getUuid(), GlobalPermissions.SYSTEM_ADMIN);
+    userSession.log_in().addOrganizationPermission(org.getUuid(), GlobalPermissions.SYSTEM_ADMIN);
   }
 
   private GroupWsSupport newGroupWsSupport() {

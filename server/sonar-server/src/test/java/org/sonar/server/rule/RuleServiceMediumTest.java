@@ -121,7 +121,7 @@ public class RuleServiceMediumTest {
 
   @Test
   public void delete_throws_ForbiddenException_if_not_administrator() {
-    userSessionRule.login().setGlobalPermissions(GlobalPermissions.SCAN_EXECUTION);
+    userSessionRule.log_in().setGlobalPermissions(GlobalPermissions.SCAN_EXECUTION);
 
     expectedException.expect(ForbiddenException.class);
     expectedException.expectMessage("Insufficient privileges");

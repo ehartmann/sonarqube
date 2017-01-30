@@ -42,7 +42,7 @@ public class ComponentIndexLoginTest extends ComponentIndexTest {
   @Test
   public void should_find_project_for_which_the_user_has_direct_permission() {
     UserDto user = newUserDto();
-    userSession.login(user);
+    userSession.log_in(user);
 
     ComponentDto project = newProject("sonarqube", "Quality Product");
     indexer.index(project);
@@ -57,7 +57,7 @@ public class ComponentIndexLoginTest extends ComponentIndexTest {
   @Test
   public void should_find_project_for_which_the_user_has_indirect_permission_through_group() {
     GroupDto group = newGroupDto();
-    userSession.login().setGroups(group);
+    userSession.log_in().setGroups(group);
 
     ComponentDto project = newProject("sonarqube", "Quality Product");
     indexer.index(project);

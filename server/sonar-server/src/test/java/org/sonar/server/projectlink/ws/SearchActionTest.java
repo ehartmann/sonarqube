@@ -76,7 +76,7 @@ public class SearchActionTest {
     underTest = new SearchAction(dbClient, userSession, componentFinder);
     ws = new WsActionTester(underTest);
 
-    userSession.login("login").setGlobalPermissions(SYSTEM_ADMIN);
+    userSession.log_in("login").setGlobalPermissions(SYSTEM_ADMIN);
   }
 
   @Test
@@ -162,13 +162,13 @@ public class SearchActionTest {
 
   @Test
   public void global_admin() throws IOException {
-    userSession.login("login").setGlobalPermissions(SYSTEM_ADMIN);
+    userSession.log_in("login").setGlobalPermissions(SYSTEM_ADMIN);
     checkItWorks();
   }
 
   @Test
   public void project_admin() throws IOException {
-    userSession.login("login");
+    userSession.log_in("login");
     ComponentDto project = insertProject();
     userSession.addProjectUuidPermissions(UserRole.ADMIN, project.uuid());
     checkItWorks(project);
@@ -176,7 +176,7 @@ public class SearchActionTest {
 
   @Test
   public void project_user() throws IOException {
-    userSession.login("login");
+    userSession.log_in("login");
     ComponentDto project = insertProject();
     userSession.addProjectUuidPermissions(UserRole.USER, project.uuid());
     checkItWorks(project);

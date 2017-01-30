@@ -260,7 +260,7 @@ public class ListActionTest {
 
   @Test
   public void fail_when_not_system_admin() throws Exception {
-    userSession.login("not-admin").setGlobalPermissions(GlobalPermissions.QUALITY_GATE_ADMIN);
+    userSession.log_in("not-admin").setGlobalPermissions(GlobalPermissions.QUALITY_GATE_ADMIN);
     definitions.addComponent(PropertyDefinition.builder("foo").build());
 
     expectedException.expect(ForbiddenException.class);
@@ -289,7 +289,7 @@ public class ListActionTest {
   }
 
   private void setUserAsSystemAdmin() {
-    userSession.login("admin").setGlobalPermissions(SYSTEM_ADMIN);
+    userSession.log_in("admin").setGlobalPermissions(SYSTEM_ADMIN);
   }
 
   private void addLicenseSetting(String key, @Nullable String name, String value) {

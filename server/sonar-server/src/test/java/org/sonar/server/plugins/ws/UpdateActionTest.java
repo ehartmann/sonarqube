@@ -83,7 +83,7 @@ public class UpdateActionTest {
 
   @Test
   public void request_fails_with_ForbiddenException_when_user_is_not_root() throws Exception {
-    userSessionRule.login();
+    userSessionRule.log_in();
 
     expectedException.expect(ForbiddenException.class);
     expectedException.expectMessage("Insufficient privileges");
@@ -161,7 +161,7 @@ public class UpdateActionTest {
   }
 
   private void makeAuthenticatedUserRoot() {
-    userSessionRule.login().setRoot();
+    userSessionRule.log_in().setRoot();
   }
 
 }

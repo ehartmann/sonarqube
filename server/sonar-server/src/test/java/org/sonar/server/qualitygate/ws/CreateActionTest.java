@@ -103,11 +103,11 @@ public class CreateActionTest {
   }
 
   private void setUserAsQualityGateAdmin() {
-    userSession.login("project-admin").setGlobalPermissions(QUALITY_GATE_ADMIN);
+    userSession.log_in("project-admin").setGlobalPermissions(QUALITY_GATE_ADMIN);
   }
 
   private void setUserAsNotQualityGateAdmin() {
-    userSession.login("not-admin").setGlobalPermissions(SCAN_EXECUTION);
+    userSession.log_in("not-admin").setGlobalPermissions(SCAN_EXECUTION);
   }
 
 }

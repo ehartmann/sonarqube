@@ -87,7 +87,7 @@ public class RemoveActionTest {
 
   @Test
   public void fail_when_component_is_not_found() {
-    userSession.login();
+    userSession.log_in();
 
     expectedException.expect(NotFoundException.class);
 
@@ -117,7 +117,7 @@ public class RemoveActionTest {
   }
 
   private ComponentDto insertProjectAndPermissions() {
-    userSession.login().setUserId(USER_ID);
+    userSession.log_in().setUserId(USER_ID);
 
     return insertProject();
   }

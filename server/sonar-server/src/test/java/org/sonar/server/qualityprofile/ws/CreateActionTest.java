@@ -198,7 +198,7 @@ public class CreateActionTest {
   }
 
   private void setUserAsQualityProfileAdmin() {
-    userSession.login("admin").setGlobalPermissions(QUALITY_PROFILE_ADMIN);
+    userSession.log_in("admin").setGlobalPermissions(QUALITY_PROFILE_ADMIN);
   }
 
   private ProfileImporter[] createImporters() {

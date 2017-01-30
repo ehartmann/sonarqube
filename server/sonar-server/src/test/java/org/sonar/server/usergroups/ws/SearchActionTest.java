@@ -191,7 +191,7 @@ public class SearchActionTest {
   }
 
   private void loginAsDefaultOrgAdmin() {
-    userSession.login("user").addOrganizationPermission(db.getDefaultOrganization().getUuid(), SYSTEM_ADMIN);
+    userSession.log_in("user").addOrganizationPermission(db.getDefaultOrganization().getUuid(), SYSTEM_ADMIN);
   }
 
   private GroupWsSupport newGroupWsSupport() {

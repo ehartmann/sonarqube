@@ -68,18 +68,18 @@ public class DeleteActionTest {
   @Before
   public void setUp() {
     ws = new WsTester(new ProjectsWs(
-      new DeleteAction(
-        componentCleanerService,
-        new ComponentFinder(dbClient),
-        dbClient,
-        userSessionRule)));
+        new DeleteAction(
+            componentCleanerService,
+            new ComponentFinder(dbClient),
+            dbClient,
+            userSessionRule)));
   }
 
   @Test
   public void global_admin_deletes_project_by_uuid() throws Exception {
     ComponentDto project = componentDbTester.insertProject();
 
-    userSessionRule.login().setGlobalPermissions(UserRole.ADMIN);
+    userSessionRule.log_in().setGlobalPermissions(UserRole.ADMIN);
     WsTester.TestRequest request = newRequest().setParam(PARAM_ID, project.uuid());
     call(request);
 
@@ -90,7 +90,7 @@ public class DeleteActionTest {
   public void global_admin_deletes_project_by_key() throws Exception {
     ComponentDto project = componentDbTester.insertProject();
 
-    userSessionRule.login().setGlobalPermissions(UserRole.ADMIN);
+    userSessionRule.log_in().setGlobalPermissions(UserRole.ADMIN);
     call(newRequest().setParam(PARAM_KEY, project.key()));
 
     assertThat(verifyDeletedKey()).isEqualTo(project.key());
@@ -105,7 +105,7 @@ public class DeleteActionTest {
   @Test
   public void project_administrator_deletes_the_project_by_uuid() throws Exception {
     ComponentDto project = componentDbTester.insertProject();
-    userSessionRule.login().addProjectUuidPermissions(UserRole.ADMIN, project.uuid());
+    userSessionRule.log_in().addProjectUuidPermissions(UserRole.ADMIN, project.uuid());
 
     call(newRequest().setParam(PARAM_ID, project.uuid()));
 
@@ -115,7 +115,7 @@ public class DeleteActionTest {
   @Test
   public void project_administrator_deletes_the_project_by_key() throws Exception {
     ComponentDto project = componentDbTester.insertProject();
-    userSessionRule.login().addProjectPermissions(UserRole.ADMIN, project.key());
+    userSessionRule.log_in().addProjectPermissions(UserRole.ADMIN, project.key());
 
     call(newRequest().setParam(PARAM_KEY, project.key()));
 
@@ -124,7 +124,7 @@ public class DeleteActionTest {
 
   @Test
   public void fail_if_insufficient_privileges() throws Exception {
-    userSessionRule.login().setGlobalPermissions(UserRole.CODEVIEWER, UserRole.ISSUE_ADMIN, UserRole.USER);
+    userSessionRule.log_in().setGlobalPermissions(UserRole.CODEVIEWER, UserRole.ISSUE_ADMIN, UserRole.USER);
     expectedException.expect(ForbiddenException.class);
 
     call(newRequest().setParam(PARAM_ID, "whatever-the-uuid"));

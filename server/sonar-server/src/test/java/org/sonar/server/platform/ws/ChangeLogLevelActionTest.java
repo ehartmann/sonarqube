@@ -57,7 +57,7 @@ public class ChangeLogLevelActionTest {
 
   @Test
   public void request_fails_with_ForbiddenException_when_user_is_not_root() {
-    userSession.login();
+    userSession.log_in();
 
     expectedException.expect(ForbiddenException.class);
 
@@ -116,6 +116,6 @@ public class ChangeLogLevelActionTest {
   }
 
   private void makeAuthenticatedUserRoot() {
-    userSession.login().setRoot();
+    userSession.log_in().setRoot();
   }
 }

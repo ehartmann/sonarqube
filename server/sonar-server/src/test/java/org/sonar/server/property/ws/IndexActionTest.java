@@ -393,7 +393,7 @@ public class IndexActionTest {
 
   @Test
   public void does_not_fail_when_user_has_not_project_browse_permission() throws Exception {
-    userSession.login("project-admin").addProjectUuidPermissions(CODEVIEWER, project.uuid());
+    userSession.log_in("project-admin").addProjectUuidPermissions(CODEVIEWER, project.uuid());
     definitions.addComponent(PropertyDefinition.builder("foo").build());
     propertyDb.insertProperties(newComponentPropertyDto(project).setKey("foo").setValue("one"));
 
@@ -466,19 +466,19 @@ public class IndexActionTest {
   }
 
   private void setAuthenticatedUser() {
-    userSession.login("user");
+    userSession.log_in("user");
   }
 
   private void setUserWithBrowsePermissionOnProject() {
-    userSession.login("user").addProjectUuidPermissions(USER, project.uuid());
+    userSession.log_in("user").addProjectUuidPermissions(USER, project.uuid());
   }
 
   private void setUserAsSystemAdmin() {
-    userSession.login("admin").setGlobalPermissions(SYSTEM_ADMIN);
+    userSession.log_in("admin").setGlobalPermissions(SYSTEM_ADMIN);
   }
 
   private void setUserAsProjectAdmin() {
-    userSession.login("project-admin")
+    userSession.log_in("project-admin")
       .addProjectUuidPermissions(ADMIN, project.uuid())
       .addProjectUuidPermissions(USER, project.uuid());
   }

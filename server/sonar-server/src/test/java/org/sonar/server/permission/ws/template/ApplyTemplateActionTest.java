@@ -177,10 +177,10 @@ public class ApplyTemplateActionTest extends BasePermissionWsTest<ApplyTemplateA
 
   @Test
   public void fail_when_not_admin_of_organization() throws Exception {
-    userSession.login().addOrganizationPermission("otherOrg", SYSTEM_ADMIN);
+    userSession.log_in().addOrganizationPermission("otherOrg", SYSTEM_ADMIN);
 
     expectedException.expect(ForbiddenException.class);
-    userSession.login().setGlobalPermissions(GlobalPermissions.SCAN_EXECUTION);
+    userSession.log_in().setGlobalPermissions(GlobalPermissions.SCAN_EXECUTION);
 
     newRequest(template1.getUuid(), project.uuid(), null);
   }

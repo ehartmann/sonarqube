@@ -69,7 +69,7 @@ public class QProfilesWsMediumTest {
 
   @Rule
   public UserSessionRule userSessionRule = UserSessionRule.forServerTester(tester)
-    .login("gandalf").setGlobalPermissions(GlobalPermissions.QUALITY_PROFILE_ADMIN);
+    .log_in("gandalf").setGlobalPermissions(GlobalPermissions.QUALITY_PROFILE_ADMIN);
 
   QProfilesWs ws;
   DbClient db;

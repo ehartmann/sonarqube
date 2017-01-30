@@ -78,7 +78,7 @@ public class CreateActionTest {
     underTest = new CreateAction(dbClient, userSession, componentFinder);
     ws = new WsActionTester(underTest);
 
-    userSession.login("login").setGlobalPermissions(SYSTEM_ADMIN);
+    userSession.log_in("login").setGlobalPermissions(SYSTEM_ADMIN);
   }
 
   @Test
@@ -111,14 +111,14 @@ public class CreateActionTest {
 
   @Test
   public void global_admin() throws IOException {
-    userSession.login("login").setGlobalPermissions(SYSTEM_ADMIN);
+    userSession.log_in("login").setGlobalPermissions(SYSTEM_ADMIN);
     insertProject();
     createAndTest();
   }
 
   @Test
   public void project_admin() throws IOException {
-    userSession.login("login");
+    userSession.log_in("login");
     ComponentDto project = insertProject();
     userSession.addProjectUuidPermissions(UserRole.ADMIN, project.uuid());
     createAndTest();
@@ -196,7 +196,7 @@ public class CreateActionTest {
 
   @Test
   public void fail_if_not_project_admin() {
-    userSession.login("login");
+    userSession.log_in("login");
     insertProject();
 
     expectedException.expect(ForbiddenException.class);

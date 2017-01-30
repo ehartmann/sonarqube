@@ -63,7 +63,7 @@ public class IndexActionTest {
   @Before
   public void setUp() {
     user = db.users().insertUser("john");
-    userSession.login(user);
+    userSession.log_in(user);
   }
 
   @Test

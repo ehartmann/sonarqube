@@ -120,7 +120,7 @@ public class RemoveGroupFromTemplateActionTest extends BasePermissionWsTest<Remo
 
   @Test
   public void fail_if_insufficient_privileges() throws Exception {
-    userSession.login().addOrganizationPermission(db.getDefaultOrganization().getUuid(), SCAN_EXECUTION);
+    userSession.log_in().addOrganizationPermission(db.getDefaultOrganization().getUuid(), SCAN_EXECUTION);
 
     expectedException.expect(ForbiddenException.class);
 
