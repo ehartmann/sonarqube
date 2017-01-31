@@ -40,7 +40,6 @@ import org.sonar.server.exceptions.BadRequestException;
 import org.sonar.server.exceptions.Errors;
 import org.sonar.server.exceptions.Message;
 import org.sonar.server.exceptions.ServerException;
-import org.sonar.server.user.UserSession;
 import org.sonarqube.ws.MediaTypes;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -62,10 +61,8 @@ public class WebServiceEngine implements LocalConnector, Startable {
 
   private final WebService.Context context;
   private final I18n i18n;
-  private final UserSession userSession;
 
-  public WebServiceEngine(WebService[] webServices, I18n i18n, UserSession userSession) {
-    this.userSession = userSession;
+  public WebServiceEngine(WebService[] webServices, I18n i18n) {
     context = new WebService.Context();
     for (WebService webService : webServices) {
       webService.define(context);
@@ -122,19 +119,15 @@ public class WebServiceEngine implements LocalConnector, Startable {
       LOGGER.error("Fail to process request " + request, e);
       // Sending exception message into response is a vulnerability. Error must be
       // displayed only in logs.
-      sendErrors(response, 500, new Errors().add(Message.of("error_occurred")));
+      sendErrors(response, 500, new Errors().add(Message.of("An error has occurred. Please contact your administrator")));
     }
   }
 
   private WebService.Action getAction(String controllerPath, String actionKey) {
     WebService.Controller controller = context.controller(controllerPath);
-    if (controller == null) {
-      throw new BadRequestException(format("Unknown controller: %s", controllerPath));
-    }
+    checkArgument(controller != null, format("Unknown controller: %s", controllerPath));
     WebService.Action action = controller.action(actionKey);
-    if (action == null) {
-      throw new BadRequestException(format("Unknown action: %s/%s", controllerPath, actionKey));
-    }
+    checkArgument(action != null, format("Unknown action: %s/%s", controllerPath, actionKey));
     return action;
   }
 
@@ -152,8 +145,7 @@ public class WebServiceEngine implements LocalConnector, Startable {
       errors.writeJson(json, i18n);
       json.endObject();
     } finally {
-      // TODO if close() fails, the runtime exception should not hide the
-      // potential exception raised in the try block.
+      // TODO if close() fails, the runtime exception should not hide the potential exception raised in the try block.
       json.close();
     }
   }
