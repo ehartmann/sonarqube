@@ -30,6 +30,7 @@ import { setDefaultPermissionTemplate } from '../../../api/permissions';
 
 export default class ActionsCell extends React.Component {
   static propTypes = {
+    organization: React.PropTypes.object,
     permissionTemplate: PermissionTemplateType.isRequired,
     topQualifiers: React.PropTypes.array.isRequired,
     refresh: CallbackType,
@@ -65,7 +66,7 @@ export default class ActionsCell extends React.Component {
   setDefault (qualifier, e) {
     e.preventDefault();
     setDefaultPermissionTemplate(
-        this.props.permissionTemplate.name,
+        this.props.permissionTemplate.id,
         qualifier
     ).then(this.props.refresh);
   }
@@ -137,7 +138,11 @@ export default class ActionsCell extends React.Component {
   }
 
   render () {
-    const { permissionTemplate: t } = this.props;
+    const { permissionTemplate: t, organization } = this.props;
+
+    const pathname = organization ?
+        `/organizations/${organization.key}/permission_templates` :
+        '/permission_templates';
 
     return (
         <div className="dropdown">
@@ -152,7 +157,7 @@ export default class ActionsCell extends React.Component {
 
             {!this.props.fromDetails && (
               <li>
-                <Link to={{ pathname: '/permission_templates', query: { id: t.id } }}>
+                <Link to={{ pathname, query: { id: t.id } }}>
                   {this.renderDropdownIcon(<i className="icon-edit"/>)}
                   Edit Permissions
                 </Link>
